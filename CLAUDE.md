@@ -1,8 +1,152 @@
 # Casino Affiliate Website — Technical Specification
 
+---
+
+## 📚 REQUIRED READING — Always Load These Files
+
+**Before writing ANY code, Claude MUST read and understand:**
+
+| File | Purpose | When to Reference |
+|------|---------|-------------------|
+| `CLAUDE.md` | Rules, pillars, testing protocol | Every task |
+| `ARCHITECTURE.md` | System design, patterns, templates | When writing code |
+| `EXECUTION_STEPS.md` | Build phases, milestones, checklists | When planning work |
+
+**If these files exist, Claude must account for their contents in every response.**
+
+---
+
+## 🖥️ Local Development Commands
+
+### Start Development Server
+
+```bash
+# Start Next.js + view in browser
+npm run dev
+# → Opens http://localhost:3000
+
+# Start Sanity Studio (if separate)
+cd sanity && npm run dev
+# → Opens http://localhost:3333
+```
+
+### Quick Test Command
+
+```bash
+# Run this before any commit or phase completion
+npm run build && npm run start
+```
+
+### Full Local Test Suite
+
+```bash
+# 1. Build check
+npm run build
+
+# 2. Start server
+npm run start &
+
+# 3. Basic smoke test (in another terminal)
+curl -s http://localhost:3000 | head -20          # Homepage loads
+curl -s http://localhost:3000/casinos | head -20  # Index loads
+curl -s http://localhost:3000/sitemap.xml         # Sitemap exists
+
+# 4. Kill background server
+kill %1
+```
+
+### Recommended package.json Scripts
+
+```json
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "npm run build",
+    "test:local": "npm run build && npm run start"
+  }
+}
+```
+
+---
+
+## ⚠️ KEY PILLARS — Non-Negotiable Principles
+
+This project is built on three foundational pillars. Every decision must support these:
+
+### 1. MODULARITY
+- **Everything is a composable module** — components, pages, content types, layouts
+- **New pages require zero code changes** — create in Sanity, it works
+- **New content types are plug-and-play** — add schema, add queries, add route
+- **Components are self-contained** — no hidden dependencies, clear interfaces
+- **Formats are swappable** — change entire site appearance via config
+
+### 2. TESTABILITY
+- **Every phase has testable milestones** — no subjective "looks good"
+- **Tests gate progress** — cannot proceed until all tests pass
+- **Regression is mandatory** — previous phase tests must still pass
+- **Pass/fail is binary** — no "partially working"
+
+### 3. EASY CONTENT MANAGEMENT
+- **Adding a new page = 5 minutes in Sanity** — no developer needed
+- **Adding content to existing page = edit in Sanity** — instant
+- **New content types follow the same pattern** — schema → query → route
+- **Editors never touch code** — all content via CMS
+
+### Modularity Checklist (Ask Before Every Implementation)
+
+```
+[ ] Can a new page of this type be added without code changes?
+[ ] Can content be edited without redeploying?
+[ ] Is this component reusable in other contexts?
+[ ] Are dependencies explicit and minimal?
+[ ] Can this be tested in isolation?
+[ ] Would adding a similar feature require copy-paste? (BAD)
+[ ] Does this follow the established pattern? (GOOD)
+```
+
+---
+
 ## Rules for Claude
 
 - **Never commit code without explicit permission.** Always ask before running `git commit`. Do not assume permission from phrases like "save this" or "finish up" — only commit when the user explicitly says "commit", "make a commit", or similar.
+
+- **All milestone tests must pass before moving to the next phase.** Each phase has defined testable milestones. Before starting a new phase:
+  1. Run all tests for the current phase
+  2. Verify all previous phase tests still pass (regression)
+  3. Only proceed when all tests are green
+
+- **Report test status explicitly.** When completing a phase, list each milestone test and its pass/fail status.
+
+- **Modularity is mandatory.** Before implementing any feature, verify it follows modular patterns. If adding a new page type requires more than: (1) Sanity schema, (2) query function, (3) route file — the design is wrong.
+
+---
+
+## Milestone Testing Protocol
+
+Before moving from Phase N to Phase N+1:
+
+```
+1. Run Phase N milestone tests        → All must pass
+2. Run Phase 0 to N-1 regression      → All must still pass
+3. Deploy to staging/preview          → Verify in browser
+4. Document any skipped tests         → With justification
+5. Get explicit approval to proceed   → User must confirm
+```
+
+### Test Types
+
+| Type | How to Test | When |
+|------|-------------|------|
+| **Build** | `npm run build` succeeds | Every phase |
+| **Route** | Page loads without error | When adding pages |
+| **Data** | Content from Sanity displays | When adding queries |
+| **Redirect** | `/go/[slug]` redirects correctly | Phase 4+ |
+| **SEO** | Meta tags present in source | Phase 5+ |
+| **Mobile** | Renders correctly at 375px | Phase 2+ |
+| **Performance** | Lighthouse > 80 | Every phase |
 
 ---
 
