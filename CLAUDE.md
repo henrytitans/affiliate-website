@@ -2,6 +2,140 @@
 
 ---
 
+## 🧠 CONTEXT MANAGEMENT — Critical for Session Continuity
+
+### At Session Start (MANDATORY)
+
+Claude MUST read these files in order at the **start of every session**:
+
+1. **`CLAUDE.md`** — This file (rules, architecture, pillars)
+2. **`PHASE_11_PLUS_PLAN.md`** — Phase definitions and milestones
+3. **`PHASE_LOG.md`** — Current phase status and history
+4. **Auto Memory** — `~/.claude/projects/.../memory/MEMORY.md` (if exists)
+
+**Then determine:**
+- What phase are we currently on?
+- What was the last completed task?
+- What is the next task to do?
+
+### During Session
+
+After completing significant work, update the phase log:
+```
+## Log Entry
+- Date: [current date]
+- Phase: [current phase number]
+- Completed: [list of completed items]
+- Next: [what's next]
+- Build Status: [pass/fail]
+```
+
+### Before Context Ends (MANDATORY)
+
+**Signs that context is ending:**
+- Conversation has 20+ back-and-forth exchanges
+- Multiple complex tasks completed in session
+- User mentions "context", "memory", or "running out"
+- System indicates context compaction imminent
+
+When you detect context is running low, you MUST:
+
+1. **Dump to Memory** — Update `PHASE_LOG.md` with new log entry:
+   ```markdown
+   ### [DATE] — [Brief Description]
+
+   **Phase:** [number]
+   **Completed:**
+   - [list items completed this session]
+
+   **In Progress:**
+   - [any partial work]
+
+   **Next:**
+   - [what should be done next]
+
+   **Build Status:** [PASS/FAIL]
+
+   **Notes:**
+   - [any important context or decisions]
+   ```
+
+2. **Update MEMORY.md** — Add any new learnings or patterns discovered
+
+3. **Run Build** — Verify current state compiles: `npm run build`
+
+4. **Tell User**:
+   ```
+   Context is getting long. I've saved the current state:
+   - Phase: [X]
+   - Just completed: [items]
+   - Next session should: [start with Y]
+
+   To continue, start a new session and say:
+   "Continue from Phase [X], working on [Y]"
+   ```
+
+### Memory File Locations
+
+| File | Location | Purpose |
+|------|----------|---------|
+| `PHASE_LOG.md` | Project root | Phase progress log |
+| `MEMORY.md` | Auto memory dir | Learnings and patterns |
+
+---
+
+## 🔍 PHASE DETECTION — How to Determine Current Phase
+
+If `PHASE_LOG.md` doesn't exist or is outdated, Claude should determine the phase by checking:
+
+### Quick Phase Check Commands
+
+```bash
+# Check if core pages exist (Phase 1+)
+ls app/casinos app/bonuses
+
+# Check if SEO is implemented (Phase 2+)
+grep -r "generateMetadata" app/
+
+# Check if filters exist (Phase 3+)
+ls components/IndexFilters.tsx
+
+# Check if all content types exist (Phase 4+)
+ls app/countries app/payment-methods app/blog app/reviews
+
+# Check format variants (Phase 5+)
+ls components/formats/
+
+# Check premium design (Phase 12)
+grep "gradient-gold" app/globals.css
+
+# Check advanced features (Phase 13)
+ls components/CompareDrawer.tsx components/BonusTimer.tsx 2>/dev/null
+```
+
+### Phase Indicators
+
+| Phase | Key Indicator |
+|-------|---------------|
+| 0-1 | Basic pages exist |
+| 2 | `generateMetadata` in pages |
+| 3 | `IndexFilters.tsx` exists |
+| 4 | All content type pages exist |
+| 5 | `components/formats/` has multiple folders |
+| 11 | Reviews system, country/payment filtering |
+| 12 | Dark theme, `bg-gradient-gold` in CSS |
+| 13 | CompareDrawer, BonusTimer components |
+| 14 | All Phase 14 checklist items in PHASE_11_PLUS_PLAN.md |
+
+### After Detection
+
+Once phase is determined:
+1. Update `PHASE_LOG.md` with current status
+2. Tell user: "Detected we're at Phase X. Last completed: [item]. Next: [item]."
+3. Ask if user wants to continue or work on something specific
+
+---
+
 ## 📚 REQUIRED READING — Always Load These Files
 
 **Before writing ANY code, Claude MUST read and understand:**
@@ -9,8 +143,8 @@
 | File | Purpose | When to Reference |
 |------|---------|-------------------|
 | `CLAUDE.md` | Rules, pillars, testing protocol | Every task |
-| `ARCHITECTURE.md` | System design, patterns, templates | When writing code |
-| `EXECUTION_STEPS.md` | Build phases, milestones, checklists | When planning work |
+| `PHASE_11_PLUS_PLAN.md` | Phase definitions, milestones | When planning work |
+| `PHASE_LOG.md` | Current phase, recent progress | Every session start |
 
 **If these files exist, Claude must account for their contents in every response.**
 
