@@ -1196,3 +1196,111 @@ export async function POST(request: NextRequest) {
 | Deploy | Push to GitHub → Vercel auto-deploys |
 | Manual revalidate | `curl -X POST "https://your-site.com/api/revalidate?secret=xxx"` |
 | Check Sanity data | Use Vision plugin in Studio or GROQ playground |
+
+---
+
+## 10. SEO & Crawlability Checklist
+
+**Every new page or component MUST follow these rules for Google crawlability.**
+
+### 10.1 Mandatory for Every Page
+
+| Requirement | How | Example |
+|-------------|-----|---------|
+| **Metadata (title + description)** | Export `metadata` object or `generateMetadata` function | Every `page.tsx` must have one |
+| **Canonical URL** | `alternates: { canonical: url }` in metadata | Prevents duplicate content issues |
+| **Open Graph tags** | `openGraph: { title, description, url, type }` in metadata | Required for social sharing |
+| **Single `<h1>`** | One per page, matches content topic | Heading hierarchy: h1 > h2 > h3 |
+| **Server-side rendering** | Pages must NOT be `'use client'` unless necessary | Content pages must be server components |
+
+### 10.2 Client Component SEO Rule
+
+**If a page must be `'use client'`** (e.g., uses hooks, localStorage), it CANNOT export metadata directly. Fix:
+
+```
+app/[route]/
+├── layout.tsx    ← Server component: exports metadata here
+└── page.tsx      ← Client component: 'use client' with UI logic
+```
+
+Current client pages with layout.tsx metadata: `/compare`, `/favorites`, `/contact`
+
+### 10.3 Content Type Pages (Detail Pages)
+
+Every `[slug]/page.tsx` must have:
+- `generateMetadata()` — dynamic title/description from Sanity data
+- `generateStaticParams()` — pre-render all slugs at build time
+- Canonical URL pointing to `${siteUrl}/[type]/${slug}`
+- JSON-LD structured data where applicable (casino, review, bonus, blog)
+- Breadcrumb schema
+
+### 10.4 Index Pages
+
+Every listing page (`/casinos`, `/bonuses`, etc.) must have:
+- Static `metadata` export with title, description, canonical, OG tags
+- `revalidate = 3600` for ISR (1-hour freshness)
+
+### 10.5 OG Type Rules
+
+| Page Type | OG Type |
+|-----------|---------|
+| Homepage, index, utility pages | `website` |
+| Blog posts | `article` (with `publishedTime`, `authors`) |
+| Casino/bonus detail | `website` |
+| User-specific pages (compare, favorites) | `website` + `noindex` |
+
+### 10.6 Files That Must Exist
+
+| File | Purpose | Status |
+|------|---------|--------|
+| `app/sitemap.ts` | Dynamic XML sitemap with all content | Required |
+| `app/robots.ts` | Crawl rules, blocks `/studio/`, `/api/`, `/go/` | Required |
+| `app/not-found.tsx` | Custom 404 page with navigation links | Required |
+| `app/loading.tsx` | Loading skeleton for Suspense boundaries | Required |
+| `app/error.tsx` | Error boundary with recovery options | Required |
+| `public/logo.png` | Organization schema logo (TODO: add real logo) | Missing |
+
+### 10.7 robots.txt Rules (Do Not Change)
+
+```
+Allow: /
+Disallow: /studio/    # Sanity CMS admin
+Disallow: /api/       # API endpoints
+Disallow: /go/        # Affiliate redirects
+Sitemap: {siteUrl}/sitemap.xml
+```
+
+### 10.8 Pre-Deploy SEO Verification
+
+Run these checks before any deploy:
+
+```bash
+# 1. Build succeeds
+npm run build
+
+# 2. Check sitemap generates
+curl -s http://localhost:3000/sitemap.xml | head -20
+
+# 3. Check robots.txt
+curl -s http://localhost:3000/robots.txt
+
+# 4. Verify meta tags on key pages (look for <title>, <meta name="description">, <link rel="canonical">)
+curl -s http://localhost:3000/casinos | grep -E '<title>|<meta name="description"|<link rel="canonical"'
+```
+
+### 10.9 Known SEO Items & Status
+
+| Item | Status | Notes |
+|------|--------|-------|
+| Sitemap (all content types) | Done | `app/sitemap.ts` |
+| Robots.txt | Done | `app/robots.ts` |
+| Metadata on all pages | Done | Including client page layouts |
+| Canonical URLs | Done | All pages have canonical |
+| Open Graph tags | Done | All pages have OG |
+| JSON-LD structured data | Done | Organization, Review, Casino, Bonus, Breadcrumbs |
+| Blog OG type `article` | Done | With publishedTime and authors |
+| `generateStaticParams` on all dynamic routes | Done | Pre-rendered at build time |
+| Image alt tags | Done | Consistent across components |
+| Semantic HTML (h1-h3, article, main, nav) | Done | Proper hierarchy |
+| 404 / Error / Loading pages | Done | All exist |
+| Organization logo in JSON-LD | TODO | Need to add `public/logo.png` |

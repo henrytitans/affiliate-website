@@ -7,9 +7,20 @@ import { getFormatKey } from '@/lib/config'
 
 export const revalidate = 3600
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
+
 export const metadata = {
   title: 'Casino Bonuses',
   description: 'Find the best casino bonuses, free spins, and no deposit offers.',
+  alternates: {
+    canonical: `${siteUrl}/bonuses`,
+  },
+  openGraph: {
+    title: 'Casino Bonuses | Casino Guide',
+    description: 'Find the best casino bonuses, free spins, and no deposit offers.',
+    url: `${siteUrl}/bonuses`,
+    type: 'website' as const,
+  },
 }
 
 interface PageProps {

@@ -4,9 +4,20 @@ import { getBlogPosts } from '@/lib/sanity/queries/blog'
 import { Container } from '@/components/layout/Container'
 import { urlFor } from '@/lib/sanity/image'
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
+
 export const metadata = {
   title: 'Blog',
   description: 'Casino news, guides, and tips from our experts.',
+  alternates: {
+    canonical: `${siteUrl}/blog`,
+  },
+  openGraph: {
+    title: 'Blog | Casino Guide',
+    description: 'Casino news, guides, and tips from our experts.',
+    url: `${siteUrl}/blog`,
+    type: 'website' as const,
+  },
 }
 
 export default async function BlogPage() {

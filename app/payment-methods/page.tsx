@@ -6,9 +6,20 @@ import { Badge } from '@/components/ui/Badge'
 import { urlFor } from '@/lib/sanity/image'
 import { paymentTypeLabels } from '@/lib/sanity/types'
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
+
 export const metadata = {
   title: 'Payment Methods',
   description: 'Find casinos by payment method - cards, e-wallets, crypto, and more.',
+  alternates: {
+    canonical: `${siteUrl}/payment-methods`,
+  },
+  openGraph: {
+    title: 'Payment Methods | Casino Guide',
+    description: 'Find casinos by payment method - cards, e-wallets, crypto, and more.',
+    url: `${siteUrl}/payment-methods`,
+    type: 'website' as const,
+  },
 }
 
 export default async function PaymentMethodsPage() {

@@ -9,7 +9,8 @@ export function generateOrganizationSchema() {
     '@type': 'Organization',
     name: siteName,
     url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
+    // TODO: Replace with actual logo URL once logo.png is added to /public
+    logo: `${siteUrl}/favicon.ico`,
     sameAs: [],
   }
 }

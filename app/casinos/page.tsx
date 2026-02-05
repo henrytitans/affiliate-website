@@ -9,9 +9,20 @@ import { getFormatKey } from '@/lib/config'
 
 export const revalidate = 3600
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
+
 export const metadata = {
   title: 'Online Casinos',
   description: 'Discover the best online casinos with our expert reviews and ratings.',
+  alternates: {
+    canonical: `${siteUrl}/casinos`,
+  },
+  openGraph: {
+    title: 'Online Casinos | Casino Guide',
+    description: 'Discover the best online casinos with our expert reviews and ratings.',
+    url: `${siteUrl}/casinos`,
+    type: 'website' as const,
+  },
 }
 
 interface PageProps {

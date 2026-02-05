@@ -14,13 +14,27 @@ export async function generateStaticParams() {
   return posts.map((p) => ({ slug: p.slug.current }))
 }
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
+
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
   const post = await getBlogPostBySlug(slug)
   if (!post) return { title: 'Post Not Found' }
+  const description = post.excerpt || `Read ${post.title} on Casino Guide.`
   return {
     title: post.title,
-    description: post.excerpt || `Read ${post.title} on Casino Guide.`,
+    description,
+    alternates: {
+      canonical: `${siteUrl}/blog/${slug}`,
+    },
+    openGraph: {
+      title: post.title,
+      description,
+      url: `${siteUrl}/blog/${slug}`,
+      type: 'article' as const,
+      ...(post.publishedAt && { publishedTime: post.publishedAt }),
+      ...(post.author && { authors: [post.author] }),
+    },
   }
 }
 

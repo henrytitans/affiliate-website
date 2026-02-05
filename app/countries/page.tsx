@@ -4,9 +4,20 @@ import { Container } from '@/components/layout/Container'
 import { Badge } from '@/components/ui/Badge'
 import { legalStatusLabels } from '@/lib/sanity/types'
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
+
 export const metadata = {
   title: 'Countries',
   description: 'Find online casinos available in your country.',
+  alternates: {
+    canonical: `${siteUrl}/countries`,
+  },
+  openGraph: {
+    title: 'Countries | Casino Guide',
+    description: 'Find online casinos available in your country.',
+    url: `${siteUrl}/countries`,
+    type: 'website' as const,
+  },
 }
 
 export default async function CountriesPage() {
