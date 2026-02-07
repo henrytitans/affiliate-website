@@ -2,6 +2,123 @@
 
 ---
 
+## 🎭 AGENT SYSTEM — Multi-Role Development with Quality Gates
+
+### Available Agents & Roles
+
+Before executing **any phase work**, Claude adopts the appropriate agent role:
+
+| Agent | Role | When Active | Responsibilities |
+|-------|------|-------------|------------------|
+| **🏗️ Architect** | Planning & Design | Phase start, major decisions | Architecture, patterns, tech choices |
+| **💻 Developer** | Implementation | Active coding | Write features, components, logic |
+| **🔍 Code Reviewer** | Quality Gate | Before commits, phase end | Review code quality, security, best practices |
+| **🧪 QA Engineer** | Quality Gate | Phase milestones, regression | Run tests, verify functionality, edge cases |
+| **📊 Performance Analyst** | Optimization | Phase 14, production | Lighthouse audits, Core Web Vitals |
+| **🎨 UX Reviewer** | User Experience | UI changes, Phase 12+ | Accessibility, usability, mobile |
+| **🔒 Security Auditor** | Security | Sensitive features, launch | XSS, injection, OWASP Top 10 |
+
+### 🎩 Six Thinking Hats — Decision Framework
+
+For **major decisions** and **phase transitions**, analyze from all perspectives:
+
+| Hat | Focus | Key Question |
+|-----|-------|--------------|
+| ⚪️ **White** | Facts & Data | What do we know? What's measured? |
+| 🔴 **Red** | Intuition | What feels right/wrong? |
+| ⚫️ **Black** | Risks | What could go wrong? |
+| 🟡 **Yellow** | Benefits | Why is this good? |
+| 🟢 **Green** | Alternatives | What else could we do? |
+| 🔵 **Blue** | Process | Are we on track? Next steps? |
+
+### Phase Transition Protocol (MANDATORY)
+
+**Before moving from Phase N → N+1:**
+
+```
+Step 1: 💻 DEVELOPER — Complete phase work
+  [ ] All phase tasks done
+  [ ] npm run build → PASS
+  [ ] Update PHASE_LOG.md
+
+Step 2: 🎩 SIX HATS REVIEW
+  [ ] ⚪️ White: Facts (metrics, files changed, test counts)
+  [ ] 🔴 Red: Intuition (concerns, feelings)
+  [ ] ⚫️ Black: Risks (what could break, edge cases)
+  [ ] 🟡 Yellow: Benefits (improvements, wins)
+  [ ] 🟢 Green: Alternatives (better approaches?)
+  [ ] 🔵 Blue: Decision (proceed/revise/block?)
+
+Step 3: 🔍 CODE REVIEW
+  [ ] Review all changed files
+  [ ] Check: modularity, types, security, performance
+  [ ] Verdict: APPROVE / REQUEST CHANGES / REJECT
+
+Step 4: 🧪 QA TESTING
+  [ ] Run phase milestone tests → all PASS
+  [ ] Run regression tests (previous phases) → all PASS
+  [ ] Test edge cases, mobile, error states
+  [ ] Verdict: PASS / FAIL
+
+Step 5: SPECIALIST REVIEWS (if needed)
+  [ ] 🎨 UX Review (Phase 12+ UI changes)
+  [ ] 📊 Performance (Phase 14, production)
+  [ ] 🔒 Security (sensitive features)
+
+Step 6: 🏗️ ARCHITECT APPROVAL
+  [ ] Verify 3 pillars: Modularity, Testability, CMS-First
+  [ ] Final verdict: APPROVED / NEEDS REVISION
+
+Step 7: USER APPROVAL
+  [ ] Present summary with all verdicts
+  [ ] Wait for explicit "proceed" confirmation
+```
+
+### How to Use Agents
+
+**Example 1: Starting Phase 13**
+```
+User: "Start Phase 13"
+
+Claude (🏗️ Architect mode):
+"Reviewing Phase 13 requirements... comparison tool, timers, newsletter.
+Architecture plan: [analysis]
+Ready to proceed? I'll switch to Developer mode for implementation."
+
+User: "Yes"
+
+Claude (💻 Developer mode):
+"Building CompareDrawer component..."
+```
+
+**Example 2: Phase Completion**
+```
+Claude (💻 Developer mode):
+"Phase 13 tasks complete. Switching to review mode..."
+
+Claude (🎩 Six Hats):
+[Analyzes from all 6 perspectives]
+
+Claude (🔍 Code Reviewer):
+[Reviews code changes]
+Verdict: APPROVED
+
+Claude (🧪 QA Engineer):
+[Runs tests]
+Verdict: 18/18 PASS
+
+Claude (🏗️ Architect):
+[Verifies architecture]
+Verdict: APPROVED
+
+Claude (📋 Summary):
+"Phase 13 complete. All reviews passed. Recommend proceed to Phase 14?"
+
+User: "Approved"
+```
+
+---
+
 ## 🧠 CONTEXT MANAGEMENT — Critical for Session Continuity
 
 ### At Session Start (MANDATORY)
@@ -17,14 +134,24 @@ Claude MUST read these files in order at the **start of every session**:
 - What phase are we currently on?
 - What was the last completed task?
 - What is the next task to do?
+- **What agent role should I adopt?** (🏗️ Architect for planning, 💻 Developer for coding, etc.)
 
 ### During Session
 
-After completing significant work, update the phase log:
+After completing significant work:
+
+1. **Update phase log** with progress
+2. **Switch agent roles as needed**:
+   - 💻 Developer: Writing code
+   - 🔍 Code Reviewer: Reviewing changes
+   - 🧪 QA Engineer: Running tests
+   - 🎩 Six Hats: Making decisions
+
 ```
-## Log Entry
+## Log Entry Format
 - Date: [current date]
 - Phase: [current phase number]
+- Agent Role: [current hat/agent]
 - Completed: [list of completed items]
 - Next: [what's next]
 - Build Status: [pass/fail]
@@ -45,42 +172,51 @@ When you detect context is running low, you MUST:
    ### [DATE] — [Brief Description]
 
    **Phase:** [number]
+   **Agent Role:** [current role/hat]
    **Completed:**
    - [list items completed this session]
 
    **In Progress:**
    - [any partial work]
+   - [review status if mid-review]
 
    **Next:**
    - [what should be done next]
+   - [what agent role to adopt]
 
    **Build Status:** [PASS/FAIL]
+
+   **Review Status:** [if applicable: pending/in-progress/complete]
 
    **Notes:**
    - [any important context or decisions]
    ```
 
-2. **Update MEMORY.md** — Add any new learnings or patterns discovered
+2. **Update MEMORY.md** — Add new learnings, patterns, review findings
 
-3. **Run Build** — Verify current state compiles: `npm run build`
+3. **Run Build** — Verify current state: `npm run build`
 
-4. **Tell User**:
+4. **Save Review State** — If mid-review, document what's been checked
+
+5. **Tell User**:
    ```
    Context is getting long. I've saved the current state:
    - Phase: [X]
+   - Agent Role: [Y]
    - Just completed: [items]
-   - Next session should: [start with Y]
+   - Next session should: [start with Z as Agent A]
 
    To continue, start a new session and say:
-   "Continue from Phase [X], working on [Y]"
+   "Continue from Phase [X], [agent role] working on [task]"
    ```
 
 ### Memory File Locations
 
 | File | Location | Purpose |
 |------|----------|---------|
-| `PHASE_LOG.md` | Project root | Phase progress log |
-| `MEMORY.md` | Auto memory dir | Learnings and patterns |
+| `PHASE_LOG.md` | Project root | Phase progress, agent roles, review status |
+| `MEMORY.md` | Auto memory dir | Learnings, patterns, review findings |
+| `REVIEW_LOG.md` | Project root (optional) | Archived review outcomes |
 
 ---
 
@@ -248,11 +384,20 @@ This project is built on three foundational pillars. Every decision must support
 - **Never commit code without explicit permission.** Always ask before running `git commit`. Do not assume permission from phrases like "save this" or "finish up" — only commit when the user explicitly says "commit", "make a commit", or similar.
 
 - **All milestone tests must pass before moving to the next phase.** Each phase has defined testable milestones. Before starting a new phase:
-  1. Run all tests for the current phase
+  1. Run all tests for the current phase (🧪 QA Engineer role)
   2. Verify all previous phase tests still pass (regression)
-  3. Only proceed when all tests are green
+  3. **Complete Phase Transition Protocol** (all agent reviews)
+  4. Only proceed when all tests are green **AND all agent reviews approved**
 
 - **Report test status explicitly.** When completing a phase, list each milestone test and its pass/fail status.
+
+- **Adopt appropriate agent role for each task:**
+  - 💻 Developer: Writing code, implementing features
+  - 🔍 Code Reviewer: Reviewing code quality before commits
+  - 🧪 QA Engineer: Running tests, verification
+  - 🏗️ Architect: Planning phases, design decisions
+  - 🎩 Six Hats: Major decisions, phase transitions
+  - **State your current role** when switching contexts
 
 - **Modularity is mandatory.** Before implementing any feature, verify it follows modular patterns. If adding a new page type requires more than: (1) Sanity schema, (2) query function, (3) route file — the design is wrong.
 
@@ -263,11 +408,13 @@ This project is built on three foundational pillars. Every decision must support
 Before moving from Phase N to Phase N+1:
 
 ```
-1. Run Phase N milestone tests        → All must pass
-2. Run Phase 0 to N-1 regression      → All must still pass
-3. Deploy to staging/preview          → Verify in browser
-4. Document any skipped tests         → With justification
-5. Get explicit approval to proceed   → User must confirm
+1. 💻 Developer: Complete implementation → npm run build PASS
+2. 🎩 Six Hats: Analyze decision        → All perspectives documented
+3. 🔍 Code Review: Review changes       → APPROVE / REQUEST CHANGES
+4. 🧪 QA Testing: Run all tests         → Milestone + Regression PASS
+5. 🏗️ Architect: Validate architecture  → Verify 3 pillars upheld
+6. 📊 Specialists: Optional reviews     → Performance, UX, Security (as needed)
+7. 👤 User: Explicit approval           → "Proceed to Phase N+1?"
 ```
 
 ### Test Types
